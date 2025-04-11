@@ -1,0 +1,31 @@
+name: Monitor Model Performance
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Run every 6 hours
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Collect metrics
+        run: python scripts/collect_production_metrics.py
+      - name: Create performance report
+        run: python scripts/generate_report.py
+      - name: Create GitHub issue if performance degrades
+        if: ${{ env.PERFORMANCE_DEGRADED == 'true' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Model performance degradation detected',
+              body: 'Model metrics have degraded. Please check the latest report.'
+            })
