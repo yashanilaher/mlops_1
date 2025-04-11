@@ -29,7 +29,7 @@ class TestCalculator(unittest.TestCase):
 
     # This test will fail deliberately for demonstration
     def test_failing(self):
-        self.assertEqual(add(2, 2), 5, "This test is deliberately set to fail")
+        self.assertEqual(add(2, 2), 4, "This test is deliberately set to fail")
 
 
 if __name__ == "__main__":
